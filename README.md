@@ -261,17 +261,17 @@ In those cases, the machine will perform a partial install but instead of seeing
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/snyk-bot">
-            <img src="https://avatars.githubusercontent.com/u/19733683?v=4" width="100;" alt="snyk-bot"/>
-            <br />
-            <sub><b>Snyk Bot</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/koenvandesande">
             <img src="https://avatars.githubusercontent.com/u/803537?v=4" width="100;" alt="koenvandesande"/>
             <br />
             <sub><b>Koen Van De Sande</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/snyk-bot">
+            <img src="https://avatars.githubusercontent.com/u/19733683?v=4" width="100;" alt="snyk-bot"/>
+            <br />
+            <sub><b>Snyk Bot</b></sub>
         </a>
     </td>
     <td align="center">
