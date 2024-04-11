@@ -348,13 +348,13 @@ set_kernel_autoinstall(){
                 log "🧩 Adding autoinstall parameter to isolinux..."
                 export LEGACY_IMAGE=1
                 sed -i -e 's/---/ autoinstall  ---/g' "${BUILD_DIR}/isolinux/txt.cfg"
-                sed -i -r 's/timeout\s+[0-9]+/timeout 1/g' "${BUILD_DIR}/isolinux/isolinux.cfg"
+                sed -i -r "s/timeout\s+[0-9]+/timeout ${TIMEOUT}/g" "${BUILD_DIR}/isolinux/isolinux.cfg"
         fi
 
         if [[ "${TIMEOUT}" != "${DEFAULT_TIMEOUT}" ]]; then
                 log "🧩 Setting grub timeout to ${TIMEOUT} sec ..."
-                sed -i -e 's/set timeout=30/set timeout=1/g' "${BUILD_DIR}/boot/grub/grub.cfg"
-                sed -i -e 's/set timeout=30/set timeout=1/g' "${BUILD_DIR}/boot/grub/loopback.cfg"
+                sed -i -e "s/set timeout=30/set timeout=${TIMEOUT}/g" "${BUILD_DIR}/boot/grub/grub.cfg"
+                sed -i -e "s/set timeout=30/set timeout=${TIMEOUT}/g" "${BUILD_DIR}/boot/grub/loopback.cfg"
                 log "👍 Set grub timeout to ${TIMEOUT} sec."
         fi
 
