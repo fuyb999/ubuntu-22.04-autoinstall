@@ -46,19 +46,19 @@ date -u +"Ubuntu 22.04 autoinstall, build %Y-%m-%dT%H:%M:%SZ" > disk-info.txt
 #echo "export WIFI_SSID=\"$WIFI_SSID\"" > server-iso-extracted/wifi-secrets
 #echo "export WIFI_PASSWORD=\"$WIFI_PASSWORD\"" >> server-iso-extracted/wifi-secrets
 
-mkdir -p server-iso-extracted/nocloud
-cp meta-data server-iso-extracted/nocloud/meta-data
-cp user-data server-iso-extracted/nocloud/user-data
-cp grub.cfg server-iso-extracted/boot/grub/grub.cfg
-cp install-sources.yaml server-iso-extracted/casper/
+#mkdir -p server-iso-extracted/nocloud
+#cp meta-data server-iso-extracted/nocloud/meta-data
+#cp user-data server-iso-extracted/nocloud/user-data
+#cp grub.cfg server-iso-extracted/boot/grub/grub.cfg
+#cp install-sources.yaml server-iso-extracted/casper/
 cp disk-info.txt server-iso-extracted/.disk/info
 #cp desktop-casper/filesystem.manifest server-iso-extracted/casper/ubuntu-desktop.manifest
 #cp desktop-casper/filesystem.size server-iso-extracted/casper/ubuntu-desktop.size
 #cp desktop-casper/filesystem-modified.squashfs server-iso-extracted/casper/ubuntu-desktop.squashfs
 cp modified-ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs server-iso-extracted/casper/ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs
 #cp attempt-wifi-connection.sh server-iso-extracted/
-cp setup-secureboot-mok.sh server-iso-extracted/
-cp sample.ogg server-iso-extracted/
+#cp setup-secureboot-mok.sh server-iso-extracted/
+#cp sample.ogg server-iso-extracted/
 cp -r drivers server-iso-extracted/
 
 # reconstruct md5sum.txt
