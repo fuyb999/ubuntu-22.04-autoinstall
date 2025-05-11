@@ -47,7 +47,7 @@ autoinstall:
   #  disable_suites: [security]
   early-commands:
   - mount > /mount-early.txt
-  - /cdrom/attempt-wifi-connection.sh
+  #- /cdrom/attempt-wifi-connection.sh
   #- echo "Choose system hostname" > /dev/console
   #- play /cdrom/sample.ogg
   #- bash -c 'read </dev/console; sed -i "s/PLACEHOLDER-HOSTNAME/$REPLY/" /var/lib/cloud/instances/nocloud/user-data.txt'

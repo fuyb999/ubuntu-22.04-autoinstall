@@ -37,13 +37,13 @@ cp $MOD_SCRIPT squashfs-root/tmp
 
 chroot squashfs-root "/tmp/$MOD_SCRIPT_BASE"
 
-umount squashfs-root/proc || umount -lf squashfs-root/proc
-umount squashfs-root/sys
-umount squashfs-root/dev/pts
-umount squashfs-root/etc/resolv.conf
-
-rm "squashfs-root/tmp/$MOD_SCRIPT_BASE" || true
-umount squashfs-root layers/a layers/b layers/c
+sudo umount squashfs-root/proc || umount -lf squashfs-root/proc
+sudo umount squashfs-root/sys
+sudo umount squashfs-root/dev/pts
+sudo umount squashfs-root/etc/resolv.conf
+sudo
+sudo rm "squashfs-root/tmp/$MOD_SCRIPT_BASE" || true
+sudo umount squashfs-root layers/a layers/b layers/c
 
 mksquashfs layers/upper "$OUTPUT_SQUASHFS" -comp xz
 chown "$SUDO_UID:$SUDO_GID" "$OUTPUT_SQUASHFS"

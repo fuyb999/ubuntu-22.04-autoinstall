@@ -5,8 +5,10 @@ set -euxo pipefail
 [[ ! -x "$(command -v xorriso)" ]] && die "Please install the 'xorriso' package."
 [[ ! -x "$(command -v wget)" ]] && die "Please install the 'wget' package."
 [[ ! -x "$(command -v apt-rdepends)" ]] && die "Please install the 'apt-rdepends' package."
+[[ ! -x "$(command -v unsquashfs)" ]] && die "Please install the 'squashfs-tools' package."
 
-UBUNTU_VER="22.04.3"
+
+UBUNTU_VER="22.04.4"
 
 # Retrieve the server ISO, if we don't have it already.
 if [ ! -f ubuntu-$UBUNTU_VER-live-server-amd64.iso ]; then
@@ -14,17 +16,19 @@ if [ ! -f ubuntu-$UBUNTU_VER-live-server-amd64.iso ]; then
 fi
 
 # Also retrieve the desktop ISO, if we don't have it already.
-if [ ! -f ubuntu-$UBUNTU_VER-desktop-amd64.iso ]; then
-    wget --progress=dot -e dotbytes=10M https://releases.ubuntu.com/22.04/ubuntu-$UBUNTU_VER-desktop-amd64.iso
-fi
+#if [ ! -f ubuntu-$UBUNTU_VER-desktop-amd64.iso ]; then
+#    wget --progress=dot -e dotbytes=10M https://releases.ubuntu.com/22.04/ubuntu-$UBUNTU_VER-desktop-amd64.iso
+#fi
+#
+## Extract the desktop filesystem, if we haven't done so already:
+#if [ ! -f desktop-casper/filesystem.squashfs ]; then
+#    mkdir desktop-casper
+#    xorriso -osirrox on -indev "ubuntu-$UBUNTU_VER-desktop-amd64.iso" -extract /casper/ desktop-casper/
+#    chmod -R +w desktop-casper
+#    touch meta-data
+#fi
 
-# Extract the desktop filesystem, if we haven't done so already:
-if [ ! -f desktop-casper/filesystem.squashfs ]; then
-    mkdir desktop-casper
-    xorriso -osirrox on -indev "ubuntu-$UBUNTU_VER-desktop-amd64.iso" -extract /casper/ desktop-casper/
-    chmod -R +w desktop-casper
-    touch meta-data
-fi
+touch meta-data
 
 # And extract the entire server ISO, if we haven't done so already.
 if [ ! -f server-iso-extracted/.disk/info ]; then
@@ -34,13 +38,13 @@ if [ ! -f server-iso-extracted/.disk/info ]; then
     cp server-iso-extracted/casper/ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs unmodified-ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs
 fi
 
-sudo ./modify-desktop-squashfs.sh desktop-casper/filesystem.squashfs desktop-squashfs-modifications.sh
+#sudo ./modify-desktop-squashfs.sh desktop-casper/filesystem.squashfs desktop-squashfs-modifications.sh
 sudo ./modify-server-squashfs.sh
 
 date -u +"Ubuntu 22.04 autoinstall, build %Y-%m-%dT%H:%M:%SZ" > disk-info.txt
 
-echo "export WIFI_SSID=\"$WIFI_SSID\"" > server-iso-extracted/wifi-secrets
-echo "export WIFI_PASSWORD=\"$WIFI_PASSWORD\"" >> server-iso-extracted/wifi-secrets
+#echo "export WIFI_SSID=\"$WIFI_SSID\"" > server-iso-extracted/wifi-secrets
+#echo "export WIFI_PASSWORD=\"$WIFI_PASSWORD\"" >> server-iso-extracted/wifi-secrets
 
 mkdir -p server-iso-extracted/nocloud
 cp meta-data server-iso-extracted/nocloud/meta-data
@@ -48,11 +52,11 @@ cp user-data server-iso-extracted/nocloud/user-data
 cp grub.cfg server-iso-extracted/boot/grub/grub.cfg
 cp install-sources.yaml server-iso-extracted/casper/
 cp disk-info.txt server-iso-extracted/.disk/info
-cp desktop-casper/filesystem.manifest server-iso-extracted/casper/ubuntu-desktop.manifest
-cp desktop-casper/filesystem.size server-iso-extracted/casper/ubuntu-desktop.size
-cp desktop-casper/filesystem-modified.squashfs server-iso-extracted/casper/ubuntu-desktop.squashfs
+#cp desktop-casper/filesystem.manifest server-iso-extracted/casper/ubuntu-desktop.manifest
+#cp desktop-casper/filesystem.size server-iso-extracted/casper/ubuntu-desktop.size
+#cp desktop-casper/filesystem-modified.squashfs server-iso-extracted/casper/ubuntu-desktop.squashfs
 cp modified-ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs server-iso-extracted/casper/ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs
-cp attempt-wifi-connection.sh server-iso-extracted/
+#cp attempt-wifi-connection.sh server-iso-extracted/
 cp setup-secureboot-mok.sh server-iso-extracted/
 cp sample.ogg server-iso-extracted/
 

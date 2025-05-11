@@ -40,3 +40,7 @@ I've experimented with two ways to customise the packages in the installation, w
 * [apt-get sources.list info](https://wiki.debian.org/SourcesList)
 * [subiquity source code](https://github.com/canonical/subiquity/blob/324ff0bc8fa5a5f3c843f59dedba7f955050e9a6/subiquity/server/controllers/install.py#L326)
 * [Ubuntu Live CD customization](https://help.ubuntu.com/community/LiveCDCustomization)
+
+```shell
+sudo apt install -y wget apt-rdepends squashfs-tools genisoimage isolinux xorriso overlayroot
+```
