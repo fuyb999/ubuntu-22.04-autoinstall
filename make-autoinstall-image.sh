@@ -91,11 +91,11 @@ xorriso -joliet on -as mkisofs \
     -boot-load-size 10068 \
     -isohybrid-gpt-basdat \
     -V "Ubuntu $UBUNTU_VER autoinstall" \
-    -o ubuntu-$UBUNTU_VER-frankeninstaller.iso \
+    -o ubuntu-$UBUNTU_VER-by-fuyb.iso \
     server-iso-extracted/
 
 
 if [ "$#" -gt 0 ] && [ "$1" == 'startvm' ]; then
-  vboxmanage storageattach autoinstall-test --storagectl IDE --port 0 --device 0 --type dvddrive --medium ubuntu-$UBUNTU_VER-frankeninstaller.iso; vboxmanage startvm autoinstall-test
+  vboxmanage storageattach autoinstall-test --storagectl IDE --port 0 --device 0 --type dvddrive --medium ubuntu-$UBUNTU_VER-by-fuyb.iso; vboxmanage startvm autoinstall-test
 fi
 
