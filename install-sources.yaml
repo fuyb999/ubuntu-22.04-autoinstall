@@ -5,8 +5,8 @@
   locale_support: none
   name:
     en: Ubuntu Desktop
-  path: ubuntu-desktop.squashfs
-  size: 568651776
+  path: ubuntu-server-minimal.squashfs
+  size: 606851072
   type: fsimage
   variant: server
   default: true
