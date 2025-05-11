@@ -69,7 +69,7 @@ cd ..
 # Parameters found with 'xorriso -indev ubuntu-$UBUNTU_VER-live-server-amd64.iso -report_el_torito as_mkisofs'
 
 xorriso -joliet on -as mkisofs \
-    -V "Ubuntu $UBUNTU_VER autoinstall" \
+    -V "Ubuntu $UBUNTU_VER by fuyb" \
     --modification-date="$(date -u +'%Y%m%d%H%M%S00')" \
     --grub2-mbr --interval:local_fs:0s-15s:zero_mbrpt,zero_gpt:"ubuntu-$UBUNTU_VER-live-server-amd64.iso" \
     --protective-msdos-label \
@@ -90,7 +90,7 @@ xorriso -joliet on -as mkisofs \
     -no-emul-boot \
     -boot-load-size 10068 \
     -isohybrid-gpt-basdat \
-    -V "Ubuntu $UBUNTU_VER autoinstall" \
+    -V "Ubuntu $UBUNTU_VER by fuyb" \
     -o ubuntu-$UBUNTU_VER-by-fuyb.iso \
     server-iso-extracted/
 
