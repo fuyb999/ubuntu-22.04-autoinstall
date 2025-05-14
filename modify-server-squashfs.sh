@@ -41,7 +41,7 @@ sudo umount squashfs-root/proc || umount -lf squashfs-root/proc
 sudo umount squashfs-root/sys
 sudo umount squashfs-root/dev/pts
 sudo umount squashfs-root/etc/resolv.conf
-sudo
+
 sudo rm "squashfs-root/tmp/$MOD_SCRIPT_BASE" || true
 sudo umount squashfs-root layers/a layers/b layers/c
 
