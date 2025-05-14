@@ -60,12 +60,15 @@ autoinstall:
     # - echo 'admin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/admin
     # - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/admin
     - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
-    - sudo systemctl disable ubuntu-advantage.service || true
-    - sudo systemctl stop ubuntu-advantage.service || true
-    - sudo sed -i 's/^deb-src/#deb-src/g' /etc/apt/sources.list  # 禁用源码仓库
-    - sudo apt-get -o Acquire::Check-Valid-Until=false update || true  # 防止证书过期问题
-    - sudo echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90force-yes
-    - sudo echo 'APT::Get::AllowUnauthenticated "true";' >> /etc/apt/apt.conf.d/90force-yes
+    - sudo systemctl stop snapd.service snapd.socket  # 停止 snapd，防止后台检查
+    - sudo touch /run/subiquity/disable-autoinstall-questions  # 阻止交互式问题
+    - sudo touch /run/subiquity/disable-metapackages  # 禁用 metapackages 检查
+    - sudo mkdir -p /etc/apt/apt.conf.d/
+    - echo 'APT::Get::Assume-Yes "true";' | sudo tee /etc/apt/apt.conf.d/90force-yes
+    - echo 'APT::Get::AllowUnauthenticated "true";' | sudo tee -a /etc/apt/apt.conf.d/90force-yes
+    - echo 'Acquire::Check-Valid-Until "false";' | sudo tee -a /etc/apt/apt.conf.d/90force-yes
+    - sudo sed -i 's/^deb/#deb/g' /etc/apt/sources.list  # 注释所有在线源
+    - sudo rm -f /var/lib/apt/lists/*  # 清除缓存，防止 APT 尝试更新
 
 #cloud-config
 ## Based on https://www.molnar-peter.hu/en/ubuntu-jammy-netinstall-pxe.html
