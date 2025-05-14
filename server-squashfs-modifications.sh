@@ -36,6 +36,8 @@ sed -i -E "s/(archive|security).ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sourc
 
 apt-get update && apt-get install git
 
+apt-get purge ubuntu-advantage-tools popularity-contest -y
+
 echo "FallbackDNS=8.8.8.8" >> /etc/systemd/resolved.conf
 echo "FallbackNTP=ntp.ubuntu.com" >> /etc/systemd/timesyncd.conf
 
