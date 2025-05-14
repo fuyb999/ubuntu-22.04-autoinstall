@@ -1,6 +1,9 @@
 #cloud-config https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html#user-data
 autoinstall:
   version: 1
+  source:
+    search_drivers: false
+#    id: <the installation source marked as default in install-sources.yaml>
   interactive-sections:
     - network
     - storage
@@ -41,11 +44,13 @@ autoinstall:
 #          addresses:
 #            - 223.5.5.5
 #            - 192.168.1.254
-  updates: no
+#  updates: no
   refresh-installer:
-    update: no
+    update: false
   drivers:
-    install: no
+    install: false
+  oem:
+    install: false
   ssh:
     install-server: yes
     allow-pw: true
