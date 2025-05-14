@@ -20,6 +20,7 @@ autoinstall:
 #    layout:
 #      name: lvm
   identity:
+    realname: 'ubuntu'
     hostname: ubuntu
     username: ubuntu
     # mkpasswd --method=sha-512 ubuntu
@@ -44,12 +45,16 @@ autoinstall:
 #          addresses:
 #            - 223.5.5.5
 #            - 192.168.1.254
-#  updates: no
   refresh-installer:
     update: false
+  apt:
+    fallback: offline-install
+    geoip: false
   drivers:
     install: false
   oem:
+    install: false
+  codecs:
     install: false
   ssh:
     install-server: yes
