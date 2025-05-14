@@ -7,6 +7,8 @@ autoinstall:
   early-commands:
     # workaround to stop ssh for packer as it thinks it timed out
     - sudo systemctl stop ssh
+    - sudo systemctl stop apt-daily.service
+    - sudo systemctl stop apt-daily.timer
   locale: en_US.UTF-8
   keyboard:
     layout: us
@@ -58,6 +60,12 @@ autoinstall:
     # - echo 'admin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/admin
     # - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/admin
     - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
+    - sudo systemctl disable ubuntu-advantage.service || true
+    - sudo systemctl stop ubuntu-advantage.service || true
+    - sudo sed -i 's/^deb-src/#deb-src/g' /etc/apt/sources.list  # 禁用源码仓库
+    - sudo apt-get -o Acquire::Check-Valid-Until=false update || true  # 防止证书过期问题
+    - sudo echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90force-yes
+    - sudo echo 'APT::Get::AllowUnauthenticated "true";' >> /etc/apt/apt.conf.d/90force-yes
 
 #cloud-config
 ## Based on https://www.molnar-peter.hu/en/ubuntu-jammy-netinstall-pxe.html
