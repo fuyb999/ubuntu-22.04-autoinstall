@@ -27,7 +27,7 @@ apt-get update && \
   proxychains4 curl -fSsL https://github.com/rickysarraf/apt-offline/releases/download/v1.8.5/apt-offline-1.8.5.tar.gz -o - | tar --strip-components=1 -zx -C /usr/bin && \
   apt-get update && \
   proxychains4 apt-get install -y mokutil efibootmgr network-manager tpm2-tools sox \
-    git wget jq tar bzip2 zip unzip xz-utils rar unrar p7zip-full vim openssh-server net-tools build-essential g++ gcc make cmake \
+    git wget jq tar bzip2 zip unzip xz-utils rar unrar p7zip-full vim openssh-server net-tools build-essential g++ gcc make cmake libpam-cracklib \
     libglvnd-dev pkg-config language-pack-zh-hans language-pack-zh-hans-base nvidia-container-toolkit docker-ce \
     openresolv telnet openssl socat libseccomp-dev ipvsadm bind9 bind9utils bind9-doc dnsutils
 

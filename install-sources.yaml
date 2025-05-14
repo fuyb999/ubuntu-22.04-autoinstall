@@ -4,7 +4,7 @@
   id: ubuntu-server-minimal
   locale_support: none
   name:
-    en: Ubuntu Desktop
+    en: Ubuntu Server
   path: ubuntu-server-minimal.squashfs
   size: 606851072
   type: fsimage
