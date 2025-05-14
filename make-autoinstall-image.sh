@@ -28,6 +28,8 @@ fi
 #    touch meta-data
 #fi
 
+touch meta-data
+
 # And extract the entire server ISO, if we haven't done so already.
 if [ ! -f server-iso-extracted/.disk/info ]; then
     mkdir server-iso-extracted
@@ -45,7 +47,7 @@ date -u +"Ubuntu Server $UBUNTU_VER autoinstall, build %Y-%m-%dT%H:%M:%SZ" > dis
 #echo "export WIFI_PASSWORD=\"$WIFI_PASSWORD\"" >> server-iso-extracted/wifi-secrets
 
 mkdir -p server-iso-extracted/nocloud
-#cp meta-data server-iso-extracted/nocloud/meta-data
+cp meta-data server-iso-extracted/nocloud/meta-data
 cp user-data.yml server-iso-extracted/nocloud/user-data
 cp grub.cfg server-iso-extracted/boot/grub/grub.cfg
 cp install-sources.yaml server-iso-extracted/casper/
