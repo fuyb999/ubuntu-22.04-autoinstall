@@ -5,7 +5,7 @@
   locale_support: none
   name:
     en: Ubuntu Server
-  path: ubuntu-server-minimal.squashfs
+  path: ubuntu-server-minimal.ubuntu-server.installer.generic.squashfs
   size: 606851072
   type: fsimage
   variant: server
