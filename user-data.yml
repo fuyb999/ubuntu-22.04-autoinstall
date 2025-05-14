@@ -57,7 +57,7 @@ autoinstall:
   late-commands:
     # - echo 'admin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/admin
     # - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/admin
-    # - echo "user created "
+    - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
 
 #cloud-config
 ## Based on https://www.molnar-peter.hu/en/ubuntu-jammy-netinstall-pxe.html
