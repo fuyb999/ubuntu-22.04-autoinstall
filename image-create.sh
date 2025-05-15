@@ -338,13 +338,13 @@ set_hwe_kernel(){
         fi
 }
 
-set_kernel_autoinstall(){
+set_kernel_autoinstall2(){
    log "🧩 Copy grub.cfg ..."
    cp grub.cfg ${BUILD_DIR}/boot/grub/
 }
 
 # add the auto-install kerel param
-set_kernel_autoinstall2(){
+set_kernel_autoinstall(){
         log "🧩 Adding autoinstall parameter to kernel command line..."
         sed -i -e 's/Try or Install Ubuntu Server/Auto Install Ubuntu Server/g' "${BUILD_DIR}/boot/grub/grub.cfg"
         sed -i -e 's/---/ autoinstall  ---/g' "${BUILD_DIR}/boot/grub/grub.cfg"
