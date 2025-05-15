@@ -211,8 +211,8 @@ verify_deps(){
 latest_release(){
         BASE_URL="https://releases.ubuntu.com/${CODE_NAME}/"
         log "🔎 Checking for latest ${CODE_NAME} release..."
-        ISO_FILE_NAME=$(curl -sSL "${BASE_URL}" |grep -oP "ubuntu-.*-server-amd64.iso" |head -n 1)
-        IMAGE_NAME=$(curl -sSL ${BASE_URL} |grep -o 'Ubuntu .* .*)' |head -n 1)
+        ISO_FILE_NAME=$(curl -k -sSL "${BASE_URL}" |grep -oP "ubuntu-.*-server-amd64.iso" |head -n 1)
+        IMAGE_NAME=$(curl -k -sSL ${BASE_URL} |grep -o 'Ubuntu .* .*)' |head -n 1)
         CURRENT_RELEASE=$(echo "${ISO_FILE_NAME}" | cut -f2 -d-)
         SHA_SUFFIX="${CURRENT_RELEASE}"
         SOURCE_ISO="${ISO_FILE_NAME}" # request the release iso
@@ -338,9 +338,15 @@ set_hwe_kernel(){
         fi
 }
 
-# add the auto-install kerel param
 set_kernel_autoinstall(){
+   log "🧩 Copy grub.cfg ..."
+   cp grub.cfg ${BUILD_DIR}/boot/grub/
+}
+
+# add the auto-install kerel param
+set_kernel_autoinstall2(){
         log "🧩 Adding autoinstall parameter to kernel command line..."
+        sed -i -e 's/Try or Install Ubuntu Server/Auto Install Ubuntu Server/g' "${BUILD_DIR}/boot/grub/grub.cfg"
         sed -i -e 's/---/ autoinstall  ---/g' "${BUILD_DIR}/boot/grub/grub.cfg"
         sed -i -e 's/---/ autoinstall  ---/g' "${BUILD_DIR}/boot/grub/loopback.cfg"
 
@@ -379,6 +385,8 @@ set_kernel_autoinstall(){
                 sed -i -e 's,---, ds=nocloud\\\;s=/cdrom/nocloud/  ---,g' "${BUILD_DIR}/boot/grub/loopback.cfg"
                 log "👍 Added data and configured kernel command line."
         fi
+
+        cp -r ${BUILD_DIR}/boot/grub .
 }
 
 # Add extra files from a folder into the build dir and run offline installer

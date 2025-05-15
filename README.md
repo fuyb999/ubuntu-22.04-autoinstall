@@ -1,3 +1,4 @@
+
 # What is PXEless? [![GitHub Release](https://img.shields.io/github/v/release/cloudymax/pxeless?style=flat&labelColor=858585&color=6BF847&logo=GitHub&logoColor=white)](https://github.com/cloudymax/pxeless/releases)
 
 It's an automated system install and image-creation tool for situations where provisioning machines via a PXE server is not an option, or is not an option *yet*. It's ideal for small-scale greenfielding, proofs-of-concept, and general management of on-prem compute infrastructure in a cloud-native way without the cloud.
@@ -331,3 +332,15 @@ In those cases, the machine will perform a partial install but instead of seeing
 MIT license.
 
 This spin-off project adds support for [eltorito + GPT images required for Ubuntu 20.10 and newer](https://askubuntu.com/questions/1289400/remaster-installation-image-for-ubuntu-20-10). It also keeps support for the [now depricated isolinux + MBR](https://archive.org/details/ubuntukylin2104-201214-daily) image type. In addition, the process is dockerized to make it possible to run on Mac/Windows hosts in addition to Linux. Automated builds via github actions have also been created.
+
+
+```shell
+sudo ./image-create.sh \
+--all-in-one \
+--user-data user-data.yml \
+--code-name jammy \
+--use-release-iso \
+--no-verify \
+--extra-files /home/develop/ubuntu-22.04-autoinstall/extras \
+--offline-installer server-squashfs-modifications.sh
+```
