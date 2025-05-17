@@ -9,6 +9,7 @@ fi
 
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 
+cp /etc/apt/sources.list /etc/apt/sources.list1
 sed -i -E "s/(archive|security).ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list
 
 #apt-get update && \
@@ -36,12 +37,14 @@ sed -i -E "s/(archive|security).ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sourc
 
 apt-get update && apt-get install git libpam-cracklib -y
 
+mv /etc/apt/sources.list1 /etc/apt/sources.list
+
 #echo "FallbackDNS=8.8.8.8" >> /etc/systemd/resolved.conf
 #echo "FallbackNTP=ntp.ubuntu.com" >> /etc/systemd/timesyncd.conf
 
 # Clean up the image
 echo ' ' > /etc/resolv.conf
+rm -rf /tmp/* ~/.bash_history /var/lib/apt/lists/* /var/cache/apt/archives
 apt clean
-rm -rf /tmp/* ~/.bash_history
 rm /var/lib/dbus/machine-id || true
 exit
