@@ -153,9 +153,9 @@ autoinstall:
     ssh_quiet_keygen: false
   # Disable SSH root login and start the ufw firewall automatically
   debconf-selections: |
+    ufw ufw/enable boolean true
 #    openssh-server openssh-server/permit-root-login boolean false
 #    openssh-server openssh-server/port string 5022
-    ufw ufw/enable boolean true
   late-commands:
     - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
     - sed -i -E 's/^#\s+Port 22$/    Port 5022/' /target/etc/ssh/ssh_config

@@ -35,7 +35,7 @@ sed -i -E "s/(archive|security).ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sourc
 #proxychains4 curl -L "https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 #chmod +x /usr/bin/docker-compose
 
-apt-get update && apt-get install git libpam-cracklib -y
+apt-get update && apt-get install git libpam-cracklib zip unzip -y
 
 mv /etc/apt/sources.list1 /etc/apt/sources.list
 
