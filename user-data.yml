@@ -20,9 +20,9 @@ autoinstall:
 #    layout:
 #      name: lvm
   identity:
-    realname: 'ubuntu'
-    hostname: ubuntu
-    username: ubuntu
+    realname: develop
+    hostname: develop
+    username: develop
     # mkpasswd --method=sha-512 ubuntu
     password: $6$lhvYUcShV/ezsNzr$DWnXMVnSnHXjPvegP0bNgnBJ8IcxlfkGxPgQX3ziAZ9nNZ.b8k2cB50.z7Ftrbm7QfoQaVrU5JxsUEPMSAfTa1
 
@@ -46,19 +46,26 @@ autoinstall:
 #            - 223.5.5.5
 #            - 192.168.1.254
 
+  system:
+    hardware:
+      drivers: [ ]  # 跳过驱动安装
   refresh-installer:
     update: false
   apt:
+    disable: true
     primary:
       - arches: [default]
         uri: "file:///cdrom"
+    disable_suites: [security]
     preserve_sources_list: false
     fallback: offline-install
     geoip: false
-  package_update: false
+  updates: security
   package_upgrade: false
   drivers:
     install: false
+  oem-config:
+    disable: true
   oem:
     install: false
   codecs:
