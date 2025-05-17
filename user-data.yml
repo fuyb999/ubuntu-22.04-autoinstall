@@ -152,18 +152,19 @@ autoinstall:
     allow-pw: true
     ssh_quiet_keygen: false
   # Disable SSH root login and start the ufw firewall automatically
-  debconf-selections: |
-    ufw ufw/enable boolean true
+#  debconf-selections: |
+#    ufw ufw/enable boolean true
 #    openssh-server openssh-server/permit-root-login boolean false
 #    openssh-server openssh-server/port string 5022
   late-commands:
-    - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
-    - sed -i -E 's/^#\s+Port 22$/    Port 5022/' /target/etc/ssh/ssh_config
-    - sed -i -E 's/^#(PermitRootLogin)(.*)$/\1 no/' /target/etc/ssh/ssh_config
-    - curtin in-target --target /target -- ufw allow 5022/tcp
-    - curtin in-target --target /target -- systemctl restart ssh
     - echo "sshd:ALL" >> /target/etc/hosts.deny
     - echo "sshd:127.0.0.1:allow" >> /target/etc/hosts.allow
+    - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
+    - sed -i -E 's/^#\s+Port 22$/    Port 5022/' /target/etc/ssh/ssh_config
+    - sed -i -E 's/#(PermitRootLogin)(.*)/\1 no/' /target/etc/ssh/ssh_config
+    - curtin in-target --target /target -- systemctl restart ssh
+    - curtin in-target --target /target -- ufw enable
+    - curtin in-target --target /target -- ufw allow 5022/tcp
     - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
     - |
       if lspci -nn | grep -q '\[03..\]:.*NVIDIA'; then
