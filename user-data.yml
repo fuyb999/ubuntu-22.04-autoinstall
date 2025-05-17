@@ -6,7 +6,7 @@ autoinstall:
 #    id: <the installation source marked as default in install-sources.yaml>
   interactive-sections:
     - network
-    - storage
+#    - storage
   early-commands:
     # workaround to stop ssh for packer as it thinks it timed out
     - sudo systemctl stop ssh
@@ -16,20 +16,100 @@ autoinstall:
   keyboard:
     layout: us
   timezone: Asia/Shanghai
-#  storage:
-#    layout:
-#      name: lvm
   identity:
     realname: develop
     hostname: develop
     username: develop
     # mkpasswd --method=sha-512 ubuntu
     password: $6$lhvYUcShV/ezsNzr$DWnXMVnSnHXjPvegP0bNgnBJ8IcxlfkGxPgQX3ziAZ9nNZ.b8k2cB50.z7Ftrbm7QfoQaVrU5JxsUEPMSAfTa1
+  user-data:
+    disable_root: true
+  storage:
+    layout:
+      name: direct
+    config:
+      # 系统盘（必需）
+      - type: disk
+        id: disk-sda
+        path: /dev/sda
+        ptable: gpt
+        wipe: superblock
+        grub_device: true
+        preserve: false
+        partitions:
+          # EFI 分区
+          - type: partition
+            id: efi-partition
+            size: 512M
+            number: 1
+            flag: boot  # 仅标记 boot 标志即可
+            guid: C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+          - type: format
+            id: efi-format
+            fstype: fat32
+            label: ESP
+          - type: mount
+            path: /boot/efi
 
-  # Let NetworkManager manage all devices on this system
-#  network:
-#    version: 2
-#    renderer: NetworkManager
+          # 根分区
+          - type: partition
+            id: root-partition
+            number: 2
+            size: -1  # 占用剩余空间
+          - type: format
+            id: root-format
+            fstype: ext4
+            extra_args: ["-O", "metadata_csum,64bit"]  # 启用校验和 64 位支持
+            label: ubuntu-root
+          - type: mount
+            path: /
+
+      - type: disk
+        id: disk-sdb
+        path: /dev/sdb
+        ptable: gpt
+        wipe: superblock
+        preserve: false
+        optional: true
+        partitions:
+          - type: partition
+            id: data-part-1
+            size: -1
+            optional: true
+          - type: format
+            id: data-format-1
+            fstype: xfs
+            label: DATA_1
+            extra_args: ["-m", "crc=1,finobt=1"]  # 启用 CRC 和反向索引
+            optional: true
+          - type: mount
+            id: data-mount-1
+            path: /data
+            optional: true
+
+      - type: disk
+        id: disk-sdc
+        path: /dev/sdc
+        ptable: gpt
+        wipe: superblock
+        preserve: false
+        optional: true
+        partitions:
+          - type: partition
+            id: data-part-2
+            size: -1
+            optional: true
+          - type: format
+            id: data-format-2
+            fstype: xfs
+            label: DATA_2
+            extra_args: ["-m", "crc=1,finobt=1"]  # 启用 CRC 和反向索引
+            optional: true
+          - type: mount
+            id: data-mount-2
+            path: /data1
+            optional: true
+
 #  network:
 #    version: 2
 #    ethernets:
@@ -40,12 +120,9 @@ autoinstall:
 #        routes:
 #          - to: default
 #            via: 192.168.2.1
-#            metric: 100
 #        nameservers:
 #          addresses:
 #            - 223.5.5.5
-#            - 192.168.1.254
-
   system:
     hardware:
       drivers: [ ]  # 跳过驱动安装
@@ -74,94 +151,38 @@ autoinstall:
     install-server: yes
     allow-pw: true
     ssh_quiet_keygen: false
-  user-data:
-    disable_root: true
   # Disable SSH root login and start the ufw firewall automatically
   debconf-selections: |
     openssh-server openssh-server/permit-root-login boolean false
+    openssh-server openssh-server/port string 5022
     ufw ufw/enable boolean true
   late-commands:
-    # - echo 'admin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/admin
-    # - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/admin
-    - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
-#    - sudo systemctl stop snapd.service snapd.socket  # 停止 snapd，防止后台检查
-#    - sudo touch /run/subiquity/disable-autoinstall-questions  # 阻止交互式问题
-#    - sudo touch /run/subiquity/disable-metapackages  # 禁用 metapackages 检查
-#    - sudo mkdir -p /etc/apt/apt.conf.d/
-#    - echo 'APT::Get::Assume-Yes "true";' | sudo tee /etc/apt/apt.conf.d/90force-yes
-#    - echo 'APT::Get::AllowUnauthenticated "true";' | sudo tee -a /etc/apt/apt.conf.d/90force-yes
-#    - echo 'Acquire::Check-Valid-Until "false";' | sudo tee -a /etc/apt/apt.conf.d/90force-yes
-#    - sudo sed -i 's/^deb/#deb/g' /etc/apt/sources.list  # 注释所有在线源
-#    - sudo rm -f /var/lib/apt/lists/*  # 清除缓存，防止 APT 尝试更新
-
-#cloud-config
-## Based on https://www.molnar-peter.hu/en/ubuntu-jammy-netinstall-pxe.html
-#autoinstall:
-#  identity:
-#    hostname: PLACEHOLDER-HOSTNAME
-#    # The following credentials have no effect - the user will be set up by gnome-initial-setup
-#    password: $6$5lpwCLsKLEzMkSJc$keOAhA6aO/5RocGThmhVA7LSNuW911Rx5HHXFEa75oGK20cEdAAgn14H5f5nGeq6QgcSyLPrWcg1.JvjXbhrN/
-#    realname: Ubuntu user
-#    username: ubuntu
-#  # Let NetworkManager manage all devices on this system
-#  network:
-#    version: 2
-#    renderer: NetworkManager
-#  refresh-installer:
-#    update: no
-#  keyboard:
-#    layout: gb
-#    toggle: null
-#    variant: ''
-#  locale: en_GB.UTF-8
-#  storage:
-#    config:
-#    - { ptable: gpt, size: largest, wipe: superblock, preserve: false, name: '', grub_device: false, type: disk, id: disk-vda }
-#    - { device: disk-vda, size: 50M, wipe: superblock, flag: boot, number: 1, preserve: false, grub_device: true, type: partition, id: partition-efi }
-#    - { fstype: fat32, volume: partition-efi, preserve: false, type: format, id: format-efi }
-#    - { device: disk-vda, size: 10G, wipe: superblock, flag: '', number: 2, preserve: false, grub_device: false, type: partition, id: partition-boot }
-#    - { fstype: ext4, volume: partition-boot, preserve: false, type: format, id: format-boot }
-#    - { device: disk-vda, size: -1, wipe: superblock, flag: '', number: 3, preserve: false, grub_device: false, type: partition, id: partition-root }
-#    # DM crypt - unlike the credentials above, this key does get used:
-#    - { volume: partition-root, key: 'ubuntu', preserve: false, type: dm_crypt, id: dm_crypt-0 }
-#    - { name: ubuntu-vg, devices: [ dm_crypt-0 ], preserve: false, type: lvm_volgroup, id: lvm_volgroup-0 }
-#    - { name: ubuntu-lv, volgroup: lvm_volgroup-0, size: -1, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-0 }
-#    - { fstype: ext4, volume: lvm_partition-0, preserve: false, type: format, id: format-root }
-#    - { path: /, device: format-root, type: mount, id: mount-2 }
-#    - { path: /boot, device: format-boot, type: mount, id: mount-1 }
-#    - { path: /boot/efi, device: format-efi, type: mount, id: mount-0 }
-#    swap:
-#      swap: 1G
-#    grub:
-#      # This avoids a loop where we autoinstall, reboot to the autoinstaller USB, then autoinstall again and so on.
-#      reorder_uefi: False
-#  drivers:
-#    install: true
-#  # From https://askubuntu.com/a/1410679 - for repeatability whether install is online or offline.
-#  #updates: security
-#  #apt:
-#  #  disable_suites: [security]
-#  early-commands:
-#  - mount > /mount-early.txt
-#  #- /cdrom/attempt-wifi-connection.sh
-#  #- echo "Choose system hostname" > /dev/console
-#  #- play /cdrom/sample.ogg
-#  #- bash -c 'read </dev/console; sed -i "s/PLACEHOLDER-HOSTNAME/$REPLY/" /var/lib/cloud/instances/nocloud/user-data.txt'
-#  late-commands:
-#  - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
-#  - mkdir /target/cdrom
-#  - mount --bind /cdrom /target/cdrom
-#  - curtin in-target --target=/target -- sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=""/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/' /etc/default/grub
-#  - curtin in-target --target=/target -- update-grub
-#  - curtin in-target --target=/target -- /cdrom/setup-secureboot-mok.sh
-#  - bash -c 'cp /etc/NetworkManager/system-connections/*.nmconnection /target/etc/NetworkManager/system-connections/ || true'
-#  - umount /target/cdrom
-#  - rm -r /target/cdrom
-#  - mv /target/etc/apt/sources.list.curtin.old /target/etc/apt/sources.list
-#  - mount > /target/mount-late.txt
-#  - mv /mount-early.txt /target/
-#  - tpm2_pcrread > /target/late-tpm2_pcrread.txt || true
-#  - tpm2_eventlog /sys/kernel/security/tpm0/binary_bios_measurements > /target/late-tpm2_eventlog.txt || true
-#  #- curtin in-target --target=/target -- ubuntu-drivers --gpgpu install nvidia
-#  version: 1
-
+    - sed -i -E 's/^#\s+Port 22$/    Port 5022/' /target/etc/ssh/ssh_config
+    - curtin in-target --target /target -- ufw allow 5022/tcp
+    - curtin in-target --target /target -- systemctl restart ssh
+    - echo "sshd:ALL" >> /target/etc/hosts.deny
+    - echo "sshd:127.0.0.1:allow" >> /target/etc/hosts.allow
+    - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
+    - |
+      if lspci -nn | grep -q '\[03..\]:.*NVIDIA'; then
+        echo "NVIDIA GPU detected, searching for driver..."
+        # Find NVIDIA driver files in /cdrom/drivers/
+        DRIVER_FILE=$(find /cdrom/drivers/ -name "NVIDIA-Linux-x86_64-*.run" | head -n 1)
+        if [ -n "$DRIVER_FILE" ] && [ -f "$DRIVER_FILE" ]; then
+          echo "Driver found: $DRIVER_FILE"
+          # Copy to target system
+          cp "$DRIVER_FILE" /target/tmp/
+          # Install driver
+          chmod +x "/target/tmp/$(basename "$DRIVER_FILE")"
+          curtin in-target --target /target -- "/tmp/$(basename "$DRIVER_FILE")" \
+            --silent \
+            --no-nouveau-check \
+            --no-questions \
+            --dkms \
+            --no-backup || true
+        else
+          echo "No NVIDIA driver file found, skipping installation."
+        fi
+      else
+        echo "No NVIDIA GPU detected, skipping driver installation."
+      fi
