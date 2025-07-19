@@ -132,7 +132,7 @@ autoinstall:
     disable: true
     primary:
       - arches: [default]
-        uri: "file:///cdrom"
+        uri: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
     disable_suites: [security]
     preserve_sources_list: false
     fallback: offline-install

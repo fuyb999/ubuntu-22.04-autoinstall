@@ -334,6 +334,7 @@ MIT license.
 This spin-off project adds support for [eltorito + GPT images required for Ubuntu 20.10 and newer](https://askubuntu.com/questions/1289400/remaster-installation-image-for-ubuntu-20-10). It also keeps support for the [now depricated isolinux + MBR](https://archive.org/details/ubuntukylin2104-201214-daily) image type. In addition, the process is dockerized to make it possible to run on Mac/Windows hosts in addition to Linux. Automated builds via github actions have also been created.
 
 
+https://ubuntu.com/server/docs/install/autoinstall-reference
 ```shell
 sudo ./image-create.sh \
 --all-in-one \
@@ -341,6 +342,6 @@ sudo ./image-create.sh \
 --code-name jammy \
 --use-release-iso \
 --no-verify \
---extra-files /home/develop/ubuntu-22.04-autoinstall/extras \
+--extra-files /data/IdeaProjects/pxeless/extras \
 --offline-installer server-squashfs-modifications.sh
 ```
