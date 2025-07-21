@@ -157,6 +157,7 @@ autoinstall:
 #    openssh-server openssh-server/permit-root-login boolean false
 #    openssh-server openssh-server/port string 5022
   late-commands:
+    - curtin in-target --target /target -- groupadd docker && usermod add -aG docker 
     - echo "sshd:ALL" >> /target/etc/hosts.deny
     - echo "sshd:127.0.0.1:allow" >> /target/etc/hosts.allow
     - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
