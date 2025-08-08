@@ -158,6 +158,7 @@ autoinstall:
 #    openssh-server openssh-server/port string 5022
   late-commands:
     - curtin in-target --target /target -- groupadd docker && usermod add -aG docker develop
+    - echo "network:{config:disabled}" > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
     - echo "sshd:ALL" >> /target/etc/hosts.deny
     - echo "sshd:127.0.0.1:allow" >> /target/etc/hosts.allow
     - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
@@ -167,7 +168,6 @@ autoinstall:
     - curtin in-target --target /target -- ufw enable
     - curtin in-target --target /target -- ufw allow 5022/tcp
     - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
-    # - echo 'network: {config: disabled}' > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg || true
     - |
       if lspci -nn | grep -q '\[03..\]:.*NVIDIA'; then
         echo "NVIDIA GPU detected, searching for driver..."
