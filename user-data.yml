@@ -167,6 +167,7 @@ autoinstall:
     - curtin in-target --target /target -- ufw enable
     - curtin in-target --target /target -- ufw allow 5022/tcp
     - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
+    - echo 'network: {config: disabled}' > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg || true
     - |
       if lspci -nn | grep -q '\[03..\]:.*NVIDIA'; then
         echo "NVIDIA GPU detected, searching for driver..."
