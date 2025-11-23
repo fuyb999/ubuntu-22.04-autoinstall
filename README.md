@@ -342,6 +342,6 @@ sudo ./image-create.sh \
 --code-name jammy \
 --use-release-iso \
 --no-verify \
---extra-files /data/IdeaProjects/pxeless/extras \
+--extra-files ~/IdeaProjects/ubuntu-22.04-autoinstall/extras \
 --offline-installer server-squashfs-modifications.sh
 ```
