@@ -4,7 +4,7 @@ autoinstall:
   source:
     search_drivers: false
 #    id: <the installation source marked as default in install-sources.yaml>
-  interactive-sections:
+  interactive-sections: [ ]
 #    - network
 #    - storage
   early-commands:
@@ -16,21 +16,121 @@ autoinstall:
   keyboard:
     layout: us
   timezone: Asia/Shanghai
-  identity:
-    realname: develop
-    hostname: develop
-    username: develop
-    # mkpasswd --method=sha-512 ubuntu
-    password: $6$lhvYUcShV/ezsNzr$DWnXMVnSnHXjPvegP0bNgnBJ8IcxlfkGxPgQX3ziAZ9nNZ.b8k2cB50.z7Ftrbm7QfoQaVrU5JxsUEPMSAfTa1
+#  identity:
+#    realname: develop
+#    hostname: develop
+#    username: develop
+#    password: $6$lhvYUcShV/ezsNzr$DWnXMVnSnHXjPvegP0bNgnBJ8IcxlfkGxPgQX3ziAZ9nNZ.b8k2cB50.z7Ftrbm7QfoQaVrU5JxsUEPMSAfTa1
+
+  # use-data for late-commands
   user-data:
+    users:
+      - name: develop
+        gecos: develop
+        groups: users, admin, adm, cdrom, sudo, dip, plugdev, docker
+        shell: /bin/bash
+        lock-passwd: false
+        #mkpasswd --method=sha-512 develop
+        passwd: "$6$OX9Cy7o6egZN9.5s$W7pzL55Px73ssJfqgYu69u7g2QUFESR7ciCOTU.Cu.93rp197P1A9yHMBmP.RASyl5KOxdrZvdFNOPRosLqKy0"
+        sudo: "ALL=(ALL) NOPASSWD:ALL"
     disable_root: true
   network:
    version: 2
    ethernets:
-     enp1s0:
+     enp0s0:
        dhcp4: false
        addresses:
          - 192.168.2.100/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp0s1:
+       dhcp4: false
+       addresses:
+         - 192.168.2.101/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp0s2:
+       dhcp4: false
+       addresses:
+         - 192.168.2.102/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp0s3:
+       dhcp4: false
+       addresses:
+         - 192.168.2.103/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp0s4:
+       dhcp4: false
+       addresses:
+         - 192.168.2.104/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp1s0:
+       dhcp4: false
+       addresses:
+         - 192.168.2.105/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp1s1:
+       dhcp4: false
+       addresses:
+         - 192.168.2.106/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp1s2:
+       dhcp4: false
+       addresses:
+         - 192.168.2.107/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp1s3:
+       dhcp4: false
+       addresses:
+         - 192.168.2.108/24
+       routes:
+         - to: default
+           via: 192.168.2.1
+       nameservers:
+         addresses:
+           - 223.5.5.5
+     enp1s4:
+       dhcp4: false
+       addresses:
+         - 192.168.2.109/24
        routes:
          - to: default
            via: 192.168.2.1
@@ -152,13 +252,12 @@ autoinstall:
     allow-pw: true
     ssh_quiet_keygen: false
   # Disable SSH root login and start the ufw firewall automatically
-#  debconf-selections: |
-#    ufw ufw/enable boolean true
-#    openssh-server openssh-server/permit-root-login boolean false
-#    openssh-server openssh-server/port string 5022
+  debconf-selections: |
+    etckeeper etckeeper/purge boolean true
+    ufw ufw/enable boolean true
+    openssh-server openssh-server/permit-root-login boolean false
+    openssh-server openssh-server/port string 5022
   late-commands:
-    - curtin in-target --target /target -- groupadd docker && usermod add -aG docker develop
-    - echo "network:{config:disabled}" > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
     - echo "sshd:ALL" >> /target/etc/hosts.deny
     - echo "sshd:127.0.0.1:allow" >> /target/etc/hosts.allow
     - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
@@ -167,7 +266,24 @@ autoinstall:
     - curtin in-target --target /target -- systemctl restart ssh
     - curtin in-target --target /target -- ufw enable
     - curtin in-target --target /target -- ufw allow 5022/tcp
+    - curtin in-target --target /target -- systemctl disable systemd-networkd-wait-online.service
+    - curtin in-target --target /target -- systemctl mask systemd-networkd-wait-online.service
     - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
+#    - echo 'network: { config: disabled }' > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+#    - echo "network:{config:disabled}" > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+#    - sed -i -E 's|(network:)|\1 |g' /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+#    - sed -i -E 's|(.*config:)|\1 |g' /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    - chroot /target systemctl enable disable-cloudinit-network.path
+    - |
+      chroot /target /bin/bash -c "
+        groupadd -f docker
+        if id develop >/dev/null 2>&1; then
+          usermod -aG docker develop
+          echo 'User develop added to docker group'
+        else
+          echo 'User develop does not exist'
+        fi
+      "
     - |
       if lspci -nn | grep -q '\[03..\]:.*NVIDIA'; then
         echo "NVIDIA GPU detected, searching for driver..."

@@ -21,17 +21,19 @@ apt-get update && \
   curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
   sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
   tee /etc/apt/sources.list.d/nvidia-container-toolkit.list && \
+  apt-get update &&  apt-get install -y nvidia-container-toolkit && \
+
   # docker-ce
   curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | apt-key add - &&  \
-  add-apt-repository "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs) stable" && \
+  add-apt-repository -y "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs) stable" && \
   apt-get update && \
-  apt-get install -y dpkg-dev mokutil efibootmgr tpm2-tools sox \
-    git wget jq tree tar upx-ucl bzip2 zip unzip xz-utils rar unrar p7zip-full vim openssh-server net-tools build-essential g++ gcc gcc-12 make cmake libpam-cracklib \
-    libglvnd-dev pkg-config language-pack-zh-hans language-pack-zh-hans-base nvidia-container-toolkit docker-ce \
-    network-manager openresolv telnet openssl socat libseccomp-dev ipvsadm bind9 bind9utils bind9-doc dnsutils \
-    conntrack dmeventd dmsetup ipset iptables ipvsadm jq keyutils libaio1 libbsd0 libdevmapper1.02.1 libdevmapper-event1.02.1 libedit2 libevent-core-2.1-7 libexpat1 libip4tc2 libip6tc2 libipset13 libjq1 libldap-2.5-0 libldap-common liblvm2cmd2.03 libmd0 libmnl0 libmpdec3 libnetfilter-conntrack3 libnfnetlink0 libnfsidmap1 libnftnl11 libnl-3-200 libnl-genl-3-200 libonig5 libpopt0 libpython3.10-minimal libpython3.10-stdlib libpython3-stdlib libreadline8 libsasl2-2 libsasl2-modules libsasl2-modules-db libsqlite3-0 libwrap0 libxtables12 lvm2 media-types netbase nfs-common python3.10 python3.10-minimal python3 python3-minimal readline-common rpcbind rsync socat thin-provisioning-tools ucf
+  apt-get install -y dpkg-dev mokutil efibootmgr tpm2-tools sox whois \
+    bash git wget jq tree tar upx-ucl bzip2 zip unzip xz-utils rar unrar p7zip-full vim openssh-server net-tools build-essential g++ gcc gcc-12 make cmake libpam-cracklib \
+    libglvnd-dev pkg-config language-pack-zh-hans language-pack-zh-hans-base docker-ce \
+    network-manager openresolv telnet openssl libseccomp-dev bind9 bind9utils bind9-doc dnsutils \
+    bash-completion rsync socat psmisc nfs-common lvm2 libseccomp2 ipvsadm ipset conntrack
 
-#curl -L "https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+#curl -L "https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 curl -L https://gitlab.com/fuyb999/docker-compose/-/raw/main/v2.40.3/docker-compose-`uname -s | tr '[:upper:]' '[:lower:]'`-`uname -m` -o /usr/bin/docker-compose
 chmod +x /usr/bin/docker-compose
 
@@ -39,6 +41,39 @@ mv /etc/apt/sources.list1 /etc/apt/sources.list
 
 #echo "FallbackDNS=8.8.8.8" >> /etc/systemd/resolved.conf
 #echo "FallbackNTP=ntp.ubuntu.com" >> /etc/systemd/timesyncd.conf
+
+# disable network auto config after restart
+mkdir -p /usr/local/bin /etc/systemd/system
+cat > /usr/local/bin/disable-cloudinit-network.sh << 'EOF'
+#!/bin/bash
+echo "50-cloud-init.yaml detected, disabling cloud-init network configuration..."
+mkdir -p /etc/cloud/cloud.cfg.d/
+echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+systemctl disable disable-cloudinit-network.path disable-cloudinit-network.service
+EOF
+chmod +x /usr/local/bin/disable-cloudinit-network.sh
+
+cat > /etc/systemd/system/disable-cloudinit-network.path << 'EOF'
+[Unit]
+Description=Monitor for cloud-init network config
+After=cloud-init.service
+
+[Path]
+PathExists=/etc/netplan/50-cloud-init.yaml
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/systemd/system/disable-cloudinit-network.service << 'EOF'
+[Unit]
+Description=Disable cloud-init network config
+After=cloud-init.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/disable-cloudinit-network.sh
+EOF
 
 # Clean up the image
 echo ' ' > /etc/resolv.conf
