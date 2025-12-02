@@ -32,7 +32,7 @@ autoinstall:
         lock-passwd: false
         #mkpasswd --method=sha-512 develop
         passwd: "$6$OX9Cy7o6egZN9.5s$W7pzL55Px73ssJfqgYu69u7g2QUFESR7ciCOTU.Cu.93rp197P1A9yHMBmP.RASyl5KOxdrZvdFNOPRosLqKy0"
-        sudo: "ALL=(ALL) NOPASSWD:ALL"
+#        sudo: "ALL=(ALL) NOPASSWD:ALL"
     disable_root: true
   network:
    version: 2

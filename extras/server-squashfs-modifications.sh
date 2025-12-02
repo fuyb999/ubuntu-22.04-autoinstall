@@ -30,7 +30,7 @@ apt-get update && \
     bash git wget jq tree tar upx-ucl bzip2 zip unzip xz-utils rar unrar p7zip-full vim openssh-server net-tools build-essential g++ gcc gcc-12 make cmake libpam-cracklib \
     libglvnd-dev pkg-config language-pack-zh-hans language-pack-zh-hans-base docker-ce \
     network-manager openresolv telnet openssl libseccomp-dev bind9 bind9utils bind9-doc dnsutils \
-    bash-completion rsync socat psmisc nfs-common lvm2 libseccomp2 ipvsadm ipset conntrack
+    bash-completion rsync socat psmisc nfs-common lvm2 libseccomp2 ipvsadm ipset conntrack ansible
 
 #curl -L "https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 curl -L https://gitlab.com/fuyb999/docker-compose/-/raw/main/v2.40.3/docker-compose-`uname -s | tr '[:upper:]' '[:lower:]'`-`uname -m` -o /usr/bin/docker-compose
