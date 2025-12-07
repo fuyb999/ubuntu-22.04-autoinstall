@@ -9,7 +9,6 @@ fi
 
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 
-cp /etc/apt/sources.list /etc/apt/sources.list1
 sed -i -E "s/(archive|security).ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list
 
 apt-get update && \
@@ -36,7 +35,7 @@ apt-get update && \
 curl -L https://gitlab.com/fuyb999/docker-compose/-/raw/main/v2.40.3/docker-compose-`uname -s | tr '[:upper:]' '[:lower:]'`-`uname -m` -o /usr/bin/docker-compose
 chmod +x /usr/bin/docker-compose
 
-mv /etc/apt/sources.list1 /etc/apt/sources.list
+rm /etc/apt/sources.list.d/*
 
 #echo "FallbackDNS=8.8.8.8" >> /etc/systemd/resolved.conf
 #echo "FallbackNTP=ntp.ubuntu.com" >> /etc/systemd/timesyncd.conf

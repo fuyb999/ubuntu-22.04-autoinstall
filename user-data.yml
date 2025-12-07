@@ -12,7 +12,7 @@ autoinstall:
     - sudo systemctl stop ssh
     - sudo systemctl stop apt-daily.service
     - sudo systemctl stop apt-daily.timer
-  locale: en_US.UTF-8
+  locale: zh_CN.UTF-8
   keyboard:
     layout: us
   timezone: Asia/Shanghai
@@ -232,7 +232,8 @@ autoinstall:
     disable: true
     primary:
       - arches: [default]
-        uri: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+        uri: "file:///media/apt-offline"
+#        uri: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
     disable_suites: [security]
     preserve_sources_list: false
     fallback: offline-install
@@ -263,17 +264,33 @@ autoinstall:
     - sed -i -E 's/^#Port 22$/Port 5022/' /target/etc/ssh/sshd_config
     - sed -i -E 's/^#\s+Port 22$/    Port 5022/' /target/etc/ssh/ssh_config
     - sed -i -E 's/#(PermitRootLogin)(.*)/\1 no/' /target/etc/ssh/ssh_config
-    - curtin in-target --target /target -- systemctl restart ssh
+    - curtin in-target --target /target -- systemctl restart sshd
     - curtin in-target --target /target -- ufw enable
     - curtin in-target --target /target -- ufw allow 5022/tcp
-    - curtin in-target --target /target -- systemctl disable systemd-networkd-wait-online.service
-    - curtin in-target --target /target -- systemctl mask systemd-networkd-wait-online.service
     - sed -i -E 's/(.*)pam_cracklib.so(.*)$/\1pam_cracklib.so retry=5 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1  /' /target/etc/pam.d/common-password || true
+    #    - curtin in-target --target /target -- systemctl disable systemd-networkd-wait-online.service
+#    - curtin in-target --target /target -- systemctl mask systemd-networkd-wait-online.service
 #    - echo 'network: { config: disabled }' > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 #    - echo "network:{config:disabled}" > /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 #    - sed -i -E 's|(network:)|\1 |g' /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 #    - sed -i -E 's|(.*config:)|\1 |g' /target/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
     - chroot /target systemctl enable disable-cloudinit-network.path
+    - curtin in-target --target /target -- systemctl disable bind9.service
+    - |
+      chroot /target /bin/bash -c "
+        groupadd -r -g 105 bind
+        useradd -r -u 105 -g bind -s /usr/sbin/nologin -d /var/cache/bind bind
+        mkdir -p /var/cache/bind
+        chown -R bind:bind /var/cache/bind /etc/bind/named.conf.options
+        chmod 2755 /var/cache/bind
+        chmod 640 /etc/bind/named.conf.options
+      "
+    - |
+      chroot /target /bin/bash -c "
+        mkdir -p /var/spool/cron/crontabs
+        chmod 1730 /var/spool/cron/crontabs
+        chown root:crontab /var/spool/cron/crontabs
+      "
     - |
       chroot /target /bin/bash -c "
         groupadd -f docker
